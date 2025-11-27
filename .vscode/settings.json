@@ -18,5 +18,6 @@
     "titleBar.inactiveBackground": "#5e86f699",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.color": "#5e86f6"
+  "peacock.color": "#5e86f6",
+  "prisma.pinToPrisma6": true
 }
