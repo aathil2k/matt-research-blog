@@ -4,6 +4,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+     "postinstall": "prisma generate",
     "generate-sitemap": "next-sitemap"
   },
   "dependencies": {
