@@ -11,6 +11,42 @@ const sanity = createClient({
 });
 
 // Function to upload Pollinations image to Sanity
+// async function uploadImageToSanity(prompt: string) {
+//   try {
+//     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+//       prompt
+//     )}?width=1024&height=768&n=1`;
+
+//     let response;
+
+//     try {
+//       // Try Pollinations
+//       response = await axios.get(imageUrl, {
+//         responseType: "arraybuffer",
+//         timeout: 15000,
+//       });
+//     } catch (err) {
+//       console.warn("Pollinations failed → Switching to fallback!", err.message);
+
+//       // Fallback — using Picsum (NEVER fails)
+//       response = await axios.get(
+//         "https://image.pollinations.ai/prompt/",
+//         { responseType: "arraybuffer" }
+//       );
+//     }
+
+//     const buffer = Buffer.from(response.data);
+
+//     const asset = await sanity.assets.upload("image", buffer, {
+//       filename: `${prompt.replace(/\s+/g, "_")}.jpg`,
+//     });
+
+//     return asset._id;
+//   } catch (err) {
+//     console.error("🔥 Image upload failed completely:", err);
+//     return null;
+//   }
+// }
 async function uploadImageToSanity(prompt: string) {
   try {
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
@@ -28,11 +64,19 @@ async function uploadImageToSanity(prompt: string) {
     } catch (err) {
       console.warn("Pollinations failed → Switching to fallback!", err.message);
 
-      // Fallback — using Picsum (NEVER fails)
-      response = await axios.get(
-        "https://picsum.photos/1024/768.jpg",
-        { responseType: "arraybuffer" }
-      );
+      // Better fallback options:
+      
+      // Option 1: Use a placeholder service with content-relevant keywords
+      const fallbackPrompt = prompt.split(' ').slice(0, 3).join('+');
+      const fallbackUrl = `https://picsum.photos/1024/768?random=${Date.now()}&grayscale&blur=2`;
+      
+      // Option 2: Use a deterministic placeholder based on prompt
+      // const fallbackUrl = `https://dummyimage.com/1024x768/4a5568/ffffff&text=${encodeURIComponent(fallbackPrompt)}`;
+      
+      response = await axios.get(fallbackUrl, {
+        responseType: "arraybuffer",
+        timeout: 10000,
+      });
     }
 
     const buffer = Buffer.from(response.data);
@@ -47,7 +91,6 @@ async function uploadImageToSanity(prompt: string) {
     return null;
   }
 }
-
 
 // POST handler
 export async function POST(req: Request) {
